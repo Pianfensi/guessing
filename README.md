@@ -17,4 +17,4 @@ There is no 100 % guarantee for not crashing right now because of several infini
 # Credits
 - All creators of the used APIs
 - https://github.com/umpirsky/country-list (for localized countries)
-- http://bulk.openweathermap.org/sample/ (for making it possible to have kind of a random way to get a city in the world)
+- http://bulk.openweathermap.org/sample/ (for making it possible to have kind of a random way to get a city in the world, you'll need to download it on your own http://bulk.openweathermap.org/sample/city.list.json.gz and save it in cityids.json)
