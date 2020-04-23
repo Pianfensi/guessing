@@ -10,6 +10,11 @@ Project written in Python 3.7 for reading several APIs to generate guessing ques
   - "fmt" for a regex check whether an user answer is valid
   - "text" for a convenient solution
   - "reaction" which I used for my Twitch chat so that you can give a feedback for user answers, there are three placeholders: username(s), verb (in german for plural cases), distance to the exact value
+# How to use
+You can import the folder apis into your Python project and use the following lines:
+- sys.path.append(os.path.join(os.getcwd(), "apis"))
+- from apis.APILoader import APILoader
+- from apis.APIHelpers import *
 # How to build your own API
 Just use one of the used APIs (like Area) and save the class file in the same folder, APILoader handles the rest.
 # Known issues
