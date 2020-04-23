@@ -15,6 +15,6 @@ Just use one of the used APIs (like Area) and save the class file in the same fo
 # Known issues
 Their is no 100 % guarantee for not crashing right now because of several infinite loops that may go on forever.
 # Credits
-All creators of the used APIs
-https://github.com/umpirsky/country-list (for localized countries)
-http://bulk.openweathermap.org/sample/ (for making it possible to have kind of a random way to get a city in the world)
+- All creators of the used APIs
+- https://github.com/umpirsky/country-list (for localized countries)
+- http://bulk.openweathermap.org/sample/ (for making it possible to have kind of a random way to get a city in the world)
