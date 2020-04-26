@@ -7,6 +7,72 @@ from APIKeys import *
 
 base_path = Path(__file__).parent
 
+class XmlListConfig(list):
+	def __init__(self, aList):
+		for element in aList:
+			if element:
+				# treat like dict
+				if len(element) == 1 or element[0].tag != element[1].tag:
+					self.append(XmlDictConfig(element))
+				# treat like list
+				elif element[0].tag == element[1].tag:
+					self.append(XmlListConfig(element))
+			elif element.text:
+				text = element.text.strip()
+				if text:
+					self.append(text)
+
+
+class XmlDictConfig(dict):
+	'''
+	Example usage:
+
+	>>> tree = ElementTree.parse('your_file.xml')
+	>>> root = tree.getroot()
+	>>> xmldict = XmlDictConfig(root)
+
+	Or, if you want to use an XML string:
+
+	>>> root = ElementTree.XML(xml_string)
+	>>> xmldict = XmlDictConfig(root)
+
+	And then use xmldict for what it is... a dict.
+	'''
+	def __init__(self, parent_element):
+		if parent_element.items():
+			self.update(dict(parent_element.items()))
+		for element in parent_element:
+			if element:
+				# treat like dict - we assume that if the first two tags
+				# in a series are different, then they are all different.
+				if len(element) == 1 or element[0].tag != element[1].tag:
+					aDict = XmlDictConfig(element)
+				# treat like list - we assume that if the first two tags
+				# in a series are the same, then the rest are the same.
+				else:
+					# here, we put the list in dictionary; the key is the
+					# tag name the list elements all share in common, and
+					# the value is the list itself 
+					aDict = {element[0].tag: XmlListConfig(element)}
+				# if the tag has attributes, add those to the dict
+				if element.items():
+					aDict.update(dict(element.items()))
+				self.update({element.tag: aDict})
+			# this assumes that if you've got an attribute in a tag,
+			# you won't be having any text. This may or may not be a 
+			# good idea -- time will tell. It works for the way we are
+			# currently doing XML configuration files...
+			elif element.items():
+				if element.tag in self:
+					if isinstance(self[element.tag], dict):
+						self[element.tag] = [self[element.tag]]
+					self[element.tag].append(dict(element.items()))
+				else:
+					self.update({element.tag: dict(element.items())})
+			# finally, if there are no child tags and no attributes, extract
+			# the text
+			else:
+				self.update({element.tag: element.text})
 
 def reqToDict(url, params={}, o=False, headers={}):
 	r = requests.get(f'{url}{urllib.parse.urlencode(params)}', headers=headers)
@@ -99,21 +165,22 @@ langs = {
 
 steamapps_path = os.path.join(base_path, "databases", "steamapps.json")
 if os.path.getmtime(steamapps_path) < time.time()-24*3600:
-    steam_apps = reqToDict('https://api.steampowered.com/ISteamApps/GetAppList/v2/?', {"key" : STEAMAPI, "format" : "json", "count" : 5})["applist"]["apps"]
-    with open(steamapps_path, "w") as f:
-        f.write(json.dumps(steam_apps))
+	steam_apps = reqToDict('https://api.steampowered.com/ISteamApps/GetAppList/v2/?', {"key" : STEAMAPI, "format" : "json", "count" : 5})["applist"]["apps"]
+	if len(steam_apps) > 0:
+		with open(steamapps_path, "w") as f:
+			f.write(json.dumps(steam_apps))
 else:
-    with open(steamapps_path, encoding="utf-8") as f:
-        steam_apps = json.loads(f.read())
+	with open(steamapps_path, encoding="utf-8") as f:
+		steam_apps = json.loads(f.read())
 fixer_path = os.path.join(base_path, "databases", "fixer.json")
 if os.path.getmtime(fixer_path) < time.time()-24*3600:
-    exchange_rates = reqToDict("http://data.fixer.io/api/latest?", {"access_key" : FIXERKEY})["rates"]
-    del exchange_rates["EUR"]
-    with open(fixer_path, "w") as f:
-        f.write(json.dumps(exchange_rates))
+	exchange_rates = reqToDict("http://data.fixer.io/api/latest?", {"access_key" : FIXERKEY})["rates"]
+	del exchange_rates["EUR"]
+	with open(fixer_path, "w") as f:
+		f.write(json.dumps(exchange_rates))
 else:
-    with open(fixer_path) as f:
-        exchange_rates = json.loads(f.read())
+	with open(fixer_path) as f:
+		exchange_rates = json.loads(f.read())
 
 currencies = {}
 localization_path = os.path.join(base_path, "databases", "localized_countries.json")
