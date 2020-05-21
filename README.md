@@ -19,6 +19,7 @@ You can import the folder apis into your Python project and use the following li
 Just use one of the used APIs (like Area) and save the class file in the same folder, APILoader handles the rest.
 # Known issues
 There is no 100 % guarantee for not crashing right now because of several infinite loops that may go on forever.
+Responses of Artsy are very inconsistent for birthday and deathday, so there might be errors.
 # Credits
 - All creators of the used APIs
 - https://github.com/umpirsky/country-list (for localized countries)
