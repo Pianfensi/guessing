@@ -4,7 +4,7 @@ from xml.etree import cElementTree as ElementTree
 from API import *
 
 class BGG(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"boardgames" : {
 				"method" : self.__getBoardgame,
@@ -17,18 +17,21 @@ class BGG(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
-		self.__getBoardgame()
+		API.__init__(self)
 	def __getBoardgame(self):
-		startid = random.randint(1,30000)
-		params = {"id" : ",".join([str(x) for x in range(startid,startid+50)]), "type" : "boardgame"}
-		r = requests.get("https://api.geekdo.com/xmlapi2/thing?" + urllib.parse.urlencode(params))
-		try:
-			root = ElementTree.XML(r.text)
-			results = XmlListConfig(root)
-			self._success = True
-		except:
-			return 0
+		id_range = 50
+		while True:
+			start_id = random.randint(1,1166e2-id_range)
+			params = {"id" : ",".join([str(x) for x in range(start_id,start_id+id_range)]), "type" : "boardgame"}
+			r = requests.get("https://api.geekdo.com/xmlapi2/thing?" + urllib.parse.urlencode(params))
+			try:
+				root = ElementTree.XML(r.text)
+				results = XmlListConfig(root)
+				self._success = True
+			except:
+				return 0
+			if len(results) > 0:
+				break
 		result = random.choice(results)
 		title = None
 		if isinstance(result["name"], list):
@@ -85,5 +88,3 @@ class BGG(API):
 			"text" : f'{ans} Minuten ist die Höchstdauer für "{self._data["title"]}" {self._data["website"]}',
 			"reaction" : "{} {} um {} Minute/n vom richtigen Wert ab."
 		}
-b = BGG(True)
-b.generate()

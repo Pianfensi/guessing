@@ -2,7 +2,7 @@
 from API import *
 
 class Book(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"books" : {
 				"method" : self.__getBook,
@@ -12,7 +12,7 @@ class Book(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getBook(self):
 		categories = ["erotic", "manga", "anime", "cats", "dogs", "animals", "computer", "science", "math", "history", "sports", "biology", "politics", "magic", "games", "chemistry", "physics", "drama", "comedy", "fiction", "fantasy", "horror", "crime", "people", "flower"]
 		url = "https://www.googleapis.com/books/v1/volumes?"

@@ -2,7 +2,7 @@
 from API import *
 
 class Twitch(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self.__headers = {
 			'Client-ID' : TWITCHID,
 			'Authorization' : 'OAuth %s' % TWITCHAUTH,
@@ -29,7 +29,7 @@ class Twitch(API):
 				}
 			}
 		}	
-		API.__init__(self, test=test)
+		API.__init__(self)
 	# Games
 	def __getGame(self):
 		url = "https://api.twitch.tv/kraken/games/top?"
@@ -52,7 +52,7 @@ class Twitch(API):
 			'reaction' : '{} {} um {} vom richtigen Wert ab.'
 		}
 	def __getGameViewers(self):
-		self._question = f'Wie viele Zuschauende gucken aktuell {self._data["name"]}?'
+		self._question = f'Wie viele Leute gucken aktuell {self._data["name"]}?'
 		ans = int(self._data["viewers"])
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",

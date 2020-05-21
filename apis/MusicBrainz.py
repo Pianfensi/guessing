@@ -4,7 +4,7 @@ import musicbrainzngs
 from API import *
 
 class MusicBrainz(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"albums" : {
 				"method" : self.__getAlbum,
@@ -25,7 +25,7 @@ class MusicBrainz(API):
 			}
 		}
 		self.__country_field = ["DE", "ES", "GB", "US", "IT", "FR", "DK", "SE", "FI", "CZ", "NL", "CA", "NO", "PL", "RU", "AT", "CH", "JP"]
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getAlbum(self):
 		random_country = random.choice(self.__country_field)
 		musicbrainzngs.set_useragent(
@@ -107,7 +107,7 @@ class MusicBrainz(API):
 				"artist" : artist_data["name"], "country" : countries[random_country][0],
 				"founded" : None, "ended" : None, "group" : ("type" in artist_data and artist_data["type"] == "Group"),
 				"person" : ("type" in artist_data and artist_data["type"] == "Person"), "birthyear" : None,
-				"deathyear" : None, "gender" : None
+				"deathyear" : None, "gender" : None, "website" : f'https://musicbrainz.org/artist/' + artist_data["id"]
 			}
 			if "life-span" in artist_data:
 				life_span = artist_data["life-span"]
@@ -130,7 +130,7 @@ class MusicBrainz(API):
 		ans = self._data["founded"]
 		self._answer = {
 			"value" : ans, "fmt" : "\d{4}",
-			"text" : f'{ans} wurde die Gruppe "{self._data["artist"]}" gegründet.',
+			"text" : f'{ans} wurde die Gruppe "{self._data["artist"]}" gegründet {self._data["website"]}',
 			"reaction" : "{} {} um {} Jahr/e vom richtigen Jahr ab."
 		}
 	def __getGroupEnded(self):
@@ -138,7 +138,7 @@ class MusicBrainz(API):
 		ans = self._data["ended"]
 		self._answer = {
 			"value" : ans, "fmt" : "\d{4}",
-			"text" : f'{ans} löste sich "{self._data["artist"]}" auf.',
+			"text" : f'{ans} löste sich "{self._data["artist"]}" auf {self._data["website"]}',
 			"reaction" : "{} {} um {} Jahr/e vom richtigen Jahr ab."
 		}	
 	def __getArtistBirthyear(self):
@@ -147,7 +147,7 @@ class MusicBrainz(API):
 		ans = self._data["birthyear"]
 		self._answer = {
 			"value" : ans, "fmt" : "\d{4}",
-			"text" : f'{ans} wurde {self._data["artist"]} geboren.',
+			"text" : f'{ans} wurde {self._data["artist"]} geboren {self._data["website"]}',
 			"reaction" : "{} {} um {} Jahr/e vom richtigen Jahr ab."
 		}
 	def __getArtistDeathyear(self):
@@ -156,6 +156,6 @@ class MusicBrainz(API):
 		ans = self._data["deathyear"]
 		self._answer = {
 			"value" : ans, "fmt" : "\d{4}",
-			"text" : f'{ans} starb {self._data["artist"]}.',
+			"text" : f'{ans} starb {self._data["artist"]} {self._data["website"]}',
 			"reaction" : "{} {} um {} Jahr/e vom richtigen Jahr ab."
 		}

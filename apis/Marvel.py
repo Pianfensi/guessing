@@ -3,7 +3,7 @@ import hashlib
 from API import *
 
 class Marvel(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"characters" : {
 				"method" : self.__getCharacter,
@@ -30,7 +30,7 @@ class Marvel(API):
 		}
 		self.__private_key = MARVELPRIVATEKEY
 		self.__public_key = MARVELPUBLICKEY
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __hash(self):
 		timestamp = randomToken()
 		return timestamp, hashlib.md5((timestamp + self.__private_key + self.__public_key).encode("utf-8")).hexdigest()
@@ -75,7 +75,7 @@ class Marvel(API):
 		comic = random.choice(result["data"]["results"])
 		self._data = {
 			"id" : comic["id"], "title" : comic["title"], "published" : None,
-			"website" : comic["urls"][0]["url"], "pages" : comic["pageCount"],
+			"website" : comic["urls"][0]["url"], "pages" : comic["pageCount"] if comic["pageCount"] > 0 else None,
 			"comicYear" : year, "comicsTotal" : totals
 		}
 		for date in comic["dates"]:

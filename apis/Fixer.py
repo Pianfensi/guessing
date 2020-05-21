@@ -2,7 +2,7 @@
 from API import *
 
 class Fixer(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"rates" : {
 				"method" : self.__getRate,
@@ -11,7 +11,7 @@ class Fixer(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getRate(self):
 		target_currency = randomKey(exchange_rates)
 		self._data = {

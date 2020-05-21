@@ -1,6 +1,7 @@
 #/usr/bin/python
 import requests, datetime, time, json, urllib, re, random, os
 
+from math import *
 from pathlib import Path
 
 from APIKeys import *
@@ -150,7 +151,40 @@ def randomToken():
 	return token
 def randomKey(d):
 	return random.choice(list(d.keys()))
+def hav(phi):
+	return sin(phi/2)**2
+def earthDistance(lat1, lon1, lat2, lon2):
+	RADIUS = 6371
+	lat1 = radians(lat1)
+	lon1 = radians(lon1)
+	lat2 = radians(lat2)
+	lon2 = radians(lon2)
+	delta_lat = lat1-lat2
+	delta_lon = lon1-lon2
+	return 2*RADIUS*asin(sqrt(hav(delta_lat)+cos(lat1)*cos(lat2)*hav(delta_lon)))
 
+
+# daily save of an offline version of all steamapp ids
+steamapps_path = os.path.join(base_path, "databases", "steamapps.json")
+if os.path.getmtime(steamapps_path) < time.time()-24*3600:
+	steam_apps = reqToDict('https://api.steampowered.com/ISteamApps/GetAppList/v2/?', {"key" : STEAMAPI, "format" : "json", "count" : 5})["applist"]["apps"]
+	if len(steam_apps) > 0:
+		with open(steamapps_path, "w") as f:
+			f.write(json.dumps(steam_apps))
+with open(steamapps_path, encoding="utf-8") as f:
+	steam_apps = json.loads(f.read())
+
+# daily save of an offline version of the fixer api
+fixer_path = os.path.join(base_path, "databases", "fixer.json")
+if os.path.getmtime(fixer_path) < time.time()-24*3600:
+	exchange_rates = reqToDict("http://data.fixer.io/api/latest?", {"access_key" : FIXERKEY})["rates"]
+	del exchange_rates["EUR"]
+	with open(fixer_path, "w") as f:
+		f.write(json.dumps(exchange_rates))
+with open(fixer_path) as f:
+	exchange_rates = json.loads(f.read())
+
+# ready countries and currencies data
 countries_path = os.path.join(base_path, "databases", "countries.json")
 with open(countries_path, encoding="utf-8") as f:
 	countryjson = json.loads(f.read())
@@ -162,26 +196,6 @@ langs = {
 	'ru' : "russisch", 'de' : "deutsch", 'th' : "thailändisch", 
 	'it' : "italienisch", 'nl' : "niederländisch", 'da' : "dänisch"
 }
-
-steamapps_path = os.path.join(base_path, "databases", "steamapps.json")
-if os.path.getmtime(steamapps_path) < time.time()-24*3600:
-	steam_apps = reqToDict('https://api.steampowered.com/ISteamApps/GetAppList/v2/?', {"key" : STEAMAPI, "format" : "json", "count" : 5})["applist"]["apps"]
-	if len(steam_apps) > 0:
-		with open(steamapps_path, "w") as f:
-			f.write(json.dumps(steam_apps))
-else:
-	with open(steamapps_path, encoding="utf-8") as f:
-		steam_apps = json.loads(f.read())
-fixer_path = os.path.join(base_path, "databases", "fixer.json")
-if os.path.getmtime(fixer_path) < time.time()-24*3600:
-	exchange_rates = reqToDict("http://data.fixer.io/api/latest?", {"access_key" : FIXERKEY})["rates"]
-	del exchange_rates["EUR"]
-	with open(fixer_path, "w") as f:
-		f.write(json.dumps(exchange_rates))
-else:
-	with open(fixer_path) as f:
-		exchange_rates = json.loads(f.read())
-
 currencies = {}
 localization_path = os.path.join(base_path, "databases", "localized_countries.json")
 with open(localization_path, encoding="utf-8") as f:

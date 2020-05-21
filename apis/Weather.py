@@ -2,7 +2,7 @@
 from API import *
 
 class Weather(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"weather" : {
 				"method" : self.__getWeather,
@@ -14,7 +14,7 @@ class Weather(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getWeather(self):
 		random_city = random.choice(cities)
 		city_id = random_city["id"]

@@ -2,17 +2,11 @@
 from APIHelpers import *
 
 class API:
-	def __init__(self, test=False):
+	def __init__(self):
 		self._success = False
 		self._data = None
-		self._test = test
 		self._weight = None
 		self._weight = self.getWeight()
-	def generate(self):
-		if self._test:
-			self._testAPI()
-		else:
-			self._randomQA()
 	def getQA(self):
 		if self._success:
 			return self._question, self._answer
@@ -27,7 +21,7 @@ class API:
 				else:
 					self._weight += 1
 		return self._weight
-	def _randomQA(self):
+	def setRandomQA(self):
 		category = randomKey(self._categories)
 		while not self._success:
 			self._categories[category]["method"]()
@@ -41,7 +35,7 @@ class API:
 				continue
 			break
 		self._categories[category]["questionTypes"][question_type]()
-	def _testAPI(self):
+	def testAPI(self):
 		for category, methods in self._categories.items():
 			methods["method"]()
 			if self._success:

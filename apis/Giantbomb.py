@@ -1,7 +1,7 @@
 #/usr/bin/python
 from API import *
 class Giantbomb(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"companies" : {
 				"method" : self.__getCompany,
@@ -12,7 +12,7 @@ class Giantbomb(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getCompany(self):
 		url = "https://www.giantbomb.com/api/companies/?"
 		headers = {"User-Agent" : "https://webdebut.net"}

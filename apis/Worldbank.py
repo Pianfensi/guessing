@@ -2,7 +2,7 @@
 from API import *
 
 class Worldbank(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"population" : {
 				"method" : self.__getPopulation,
@@ -11,7 +11,7 @@ class Worldbank(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getPopulation(self):
 		year = random.randint(1960, time.localtime(time.time())[0]-2)
 		url = 'https://api.worldbank.org/v2/de/country/all/indicator/SP.POP.TOTL?'

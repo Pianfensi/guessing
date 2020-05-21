@@ -2,7 +2,7 @@
 from API import *
 
 class Steam(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"games" : {
 				"method" : self.__getGame,
@@ -25,7 +25,7 @@ class Steam(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getGame(self):
 		params = {"key" : STEAMAPI, "format" : "json", "count" : 5}
 		url = "https://store.steampowered.com/api/appdetails/?"
@@ -75,7 +75,7 @@ class Steam(API):
 		ans = self._data["achievements"]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",
-			'text' : f'{ans} Errungenschaft{"" if ans == 1 else "en"} hat "{self._data["name"]}" (https://store.steampowered.com/app/{self._data["id"]}).',
+			'text' : f'{ans} Errungenschaft{"" if ans == 1 else "en"} hat "{self._data["name"]}" https://store.steampowered.com/app/{self._data["id"]}',
 			'reaction' : '{} {} um {} vom richtigen Wert ab.'
 		}
 	def __getGameReviews(self):
@@ -83,7 +83,7 @@ class Steam(API):
 		ans = self._data["reviews"]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",
-			'text' : f'{ans} Review{"" if ans == 1 else "s"} besitzt "{self._data["name"]}" (https://store.steampowered.com/app/{self._data["id"]}).',
+			'text' : f'{ans} Review{"" if ans == 1 else "s"} besitzt "{self._data["name"]}" https://store.steampowered.com/app/{self._data["id"]}',
 			'reaction' : '{} {} um {} vom richtigen Wert ab.'
 		}
 	def __getGameDLCs(self):
@@ -91,7 +91,7 @@ class Steam(API):
 		ans = self._data["dlcs"]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",
-			'text' : f'{ans} DLC{"" if ans == 1 else "s"} besitzt "{self._data["name"]}" (https://store.steampowered.com/app/{self._data["id"]}).',
+			'text' : f'{ans} DLC{"" if ans == 1 else "s"} besitzt "{self._data["name"]}" https://store.steampowered.com/app/{self._data["id"]}',
 			'reaction' : '{} {} um {} vom richtigen Wert ab.'
 		}
 	def __getGamePrice(self):
@@ -99,7 +99,7 @@ class Steam(API):
 		ans = self._data["price"]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+[,\.]\d\d",
-			'text' : f'{floatChic(ans)} kostet "{self._data["name"]}" (https://store.steampowered.com/app/{self._data["id"]}).',
+			'text' : f'{floatChic(ans)} kostet "{self._data["name"]}" https://store.steampowered.com/app/{self._data["id"]}',
 			'reaction' : '{} {} um {} € vom richtigen Wert ab.'
 		}
 	def __getGameMetacritic(self):
@@ -107,7 +107,7 @@ class Steam(API):
 		ans = self._data["metacritic"]
 		self._answer = {
 			'value' : ans, 'fmt' : "(0|[1-9]\d|100)",
-			'text' : f'{ans} ist der Metascore von "{self._data["name"]}" (https://store.steampowered.com/app/{self._data["id"]}).',
+			'text' : f'{ans} ist der Metascore von "{self._data["name"]}" https://store.steampowered.com/app/{self._data["id"]}',
 			'reaction' : '{} {} um {} vom richtigen Wert ab.'
 		}
 	def __getGameRelease(self):
@@ -115,7 +115,7 @@ class Steam(API):
 		ans = dmy(self._data["release"])
 		self._answer = {
 			'value' : ans, 'fmt' : "\d\d\.\d\d\.\d\d\d\d",
-			'text' : f'Am {ans} erschien "{self._data["name"]}" (https://store.steampowered.com/app/{self._data["id"]}).',
+			'text' : f'Am {ans} erschien "{self._data["name"]}" https://store.steampowered.com/app/{self._data["id"]}',
 			'reaction' : '{} {} um {} Tag/e vom richtigen Datum ab.'
 		}
 	def __getAchievement(self):
@@ -135,7 +135,10 @@ class Steam(API):
 			return 0
 		achievement_progresses = achievement_progresses["achievementpercentages"]["achievements"]
 		game_name = achievement_datas["game"]["gameName"]
-		achievement_datas = achievement_datas["game"]["availableGameStats"]["achievements"]
+		try:
+			achievement_datas = achievement_datas["game"]["availableGameStats"]["achievements"]
+		except:
+			return 0
 		self._success = True
 		achievements = {}
 		total_progress = 0

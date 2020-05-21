@@ -2,7 +2,7 @@
 from API import *
 
 class Pokemon(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"pokemons" : {
 				"method" : self.__getPokemon,
@@ -13,9 +13,9 @@ class Pokemon(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getPokemon(self):
-		poke_id = random.randint(1,251)
+		poke_id = random.randint(1,251) # first and second generations
 		species = reqToDict(f'https://pokeapi.co/api/v2/pokemon-species/{poke_id}')
 		stats = reqToDict(f'https://pokeapi.co/api/v2/pokemon/{poke_id}')
 		if species == None or stats == None:

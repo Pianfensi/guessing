@@ -2,7 +2,7 @@
 from API import *
 
 class Area(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"areas" : {
 				"method" : self.__getArea,
@@ -11,7 +11,7 @@ class Area(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getArea(self):
 		self._data = countries[randomKey(countries)]
 		self._success = True
@@ -20,6 +20,6 @@ class Area(API):
 		ans = self._data[1]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",
-			'text' : f'{ans:n} km² ist {self._data[0]} groß.',
+			'text' : f'{numWithSeps(ans)} km² ist {self._data[0]} groß.',
 			'reaction' : '{} {} um {} km² vom richtigen Wert ab.'
 		}

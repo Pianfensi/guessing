@@ -2,7 +2,7 @@
 from API import *
 
 class Youtube(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"channels" : {
 				"method" : self.__getChannel,
@@ -25,14 +25,14 @@ class Youtube(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getChannel(self):
 		url = "https://www.googleapis.com/youtube/v3/search?"
 		params = {
 			"channelType" :"any", "maxResults" : 50,
 			"order" : "relevance", "regionCode" : "de",
 			"safeSearch" : "none", "type" : "channel",
-			"part" : "snippet", "key" : YOUTUBEKEY, 
+			"part" : "snippet", "key" : GOOGLEKEY, 
 			"publishedBefore" : timetostr(random.randint(strtotime("2016-01-01T00:00:00Z"), int(time.time())))}
 		results = reqToDict(url, params=params)
 		if results == None or "items" not in results:
@@ -40,7 +40,7 @@ class Youtube(API):
 		channel = random.choice(results["items"])
 		channel_id = channel["id"]["channelId"]
 		channel_api = "https://www.googleapis.com/youtube/v3/channels?"
-		channel_params = {"id" : channel_id, "part" : "snippet,statistics,id", "key" : YOUTUBEKEY}
+		channel_params = {"id" : channel_id, "part" : "snippet,statistics,id", "key" : GOOGLEKEY}
 		stats = reqToDict(channel_api, params = channel_params)
 		if stats == None or "items" not in stats:
 			return 0
@@ -73,7 +73,7 @@ class Youtube(API):
 			'reaction' : '{} {} um {} vom richtigen Wert ab.'
 		}
 	def __getChannelVideos(self):
-		self._question = f'Wie viele Videos hat der YouTube-Kanal {self._data["longName"]} mit {self._data["subs"]:n} Abonnenten?'
+		self._question = f'Wie viele Videos hat der YouTube-Kanal {self._data["longName"]} mit {numWithSeps(self._data["subs"])} Abonnenten?'
 		ans = self._data["videos"]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",
@@ -92,7 +92,7 @@ class Youtube(API):
 		url = "https://www.googleapis.com/youtube/v3/search?"
 		params = {"maxResults" : 50, "order" : "relevance",
 			"regionCode" : "de", "safeSearch" : "none",
-			"type" : "video", "part" : "snippet", "key" : YOUTUBEKEY, 
+			"type" : "video", "part" : "snippet", "key" : GOOGLEKEY, 
 			"publishedBefore" : timetostr(random.randint(strtotime("2016-01-01T00:00:00Z"), int(time.time())))}
 		results = reqToDict(url, params=params)
 		if results == None or "items" not in results:
@@ -100,7 +100,7 @@ class Youtube(API):
 		video = random.choice(results["items"])
 		video_id = video["id"]["videoId"]
 		video_api = "https://www.googleapis.com/youtube/v3/videos?"
-		video_params = {"id" : video_id, "part" : "contentDetails,snippet,statistics,id", "key" : YTKEY}
+		video_params = {"id" : video_id, "part" : "contentDetails,snippet,statistics,id", "key" : GOOGLEKEY}
 		stats = reqToDict(video_api, params=video_params)
 		if stats == None or "items" not in stats:
 			return 0
@@ -115,16 +115,22 @@ class Youtube(API):
 			"duration" : yttosec(video_stats["contentDetails"]["duration"]),
 			"published" : dmy(video_stats["snippet"]["publishedAt"])
 		}
+		self._data["years"] = round(self._data["age"]/365)
 		for stat in ["comment", "dislike", "like", "view"]:
 			if f'{stat}Count' in video_stats["statistics"]:
 				self._data[f'{stat}s'] = int(video_stats["statistics"][f'{stat}Count'])
 	def __getVideoAge(self):
-		self._question = f'Wie viele Tage ist das Video {self._data["title"]} vom Kanal {self._data["channelname"]} bereits online?'
-		ans = self._data["age"]
+		if self._data["years"] > 1:
+			unit = "Jahr"
+			ans = self._data["years"]
+		else:
+			unit = "Tag"
+			ans = self._data["age"]
+		self._question = f'Wie viele {unit}e ist das Video {self._data["title"]} vom Kanal {self._data["channelname"]} bereits online?'
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",
-			'text' : f'{numWithSeps(ans)} ist Tag{"" if ans == 1 else "e"} https://youtu.be/{self._data["id"]} online.',
-			'reaction' : '{} {} um {} Tag/e vom richtigen Wert ab.'
+			'text' : f'{numWithSeps(ans)} {unit}{"" if ans == 1 else "e"} ist https://youtu.be/{self._data["id"]} online.',
+			'reaction' : '{} {} um {} ' + unit + '/e vom richtigen Wert ab.'
 		}
 	def __getVideoDuration(self):
 		self._question = f'Wie lange ([M]M:SS) dauert das Video {self._data["title"]} vom Kanal {self._data["channelname"]}?'
@@ -136,7 +142,7 @@ class Youtube(API):
 			'reaction' : '{} {} um {} Sekunde/n vom richtigen Wert ab.'
 		}
 	def __getVideoComments(self):
-		self._question = f'Wie viele Kommentare hat das Video {self._data["title"]} vom Kanal {self._data["channelname"]} mit {self._data["views"]:n} Aufrufen?'
+		self._question = f'Wie viele Kommentare hat das Video {self._data["title"]} vom Kanal {self._data["channelname"]} mit {numWithSeps(self._data["views"])} Aufrufen?'
 		ans = self._data["comments"]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",
@@ -144,7 +150,7 @@ class Youtube(API):
 			'reaction' : '{} {} um {} vom richtigen Wert ab.'
 		}
 	def __getVideoDislikes(self):
-		self._question = f'Wie oft bekam das Video {self._data["title"]} vom Kanal {self._data["channelname"]} ein 👎 bei {self._data["likes"]:n} 👍?'
+		self._question = f'Wie oft bekam das Video {self._data["title"]} vom Kanal {self._data["channelname"]} ein 👎 bei {numWithSeps(self._data["likes"])} 👍?'
 		ans = self._data["dislikes"]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",
@@ -152,7 +158,7 @@ class Youtube(API):
 			'reaction' : '{} {} um {} vom richtigen Wert ab.'
 		}
 	def __getVideoLikes(self):
-		self._question = f'Wie oft bekam das Video {self._data["title"]} vom Kanal {self._data["channelname"]} ein 👍 bei {self._data["dislikes"]:n} 👎?'
+		self._question = f'Wie oft bekam das Video {self._data["title"]} vom Kanal {self._data["channelname"]} ein 👍 bei {numWithSeps(self._data["dislikes"])} 👎?'
 		ans = self._data["likes"]
 		self._answer = {
 			'value' : ans, 'fmt' : "\d+",

@@ -2,7 +2,7 @@
 from API import *
 
 class TMDB(API):
-	def __init__(self, test=False):
+	def __init__(self):
 		self._categories = {
 			"movies" : {
 				"method" : self.__getMovie,
@@ -30,7 +30,7 @@ class TMDB(API):
 				}
 			}
 		}
-		API.__init__(self, test=test)
+		API.__init__(self)
 	def __getMovie(self):
 		src = random.choice(["popular", "top_rated"])
 		url = f"https://api.themoviedb.org/3/movie/{src}?"
@@ -62,7 +62,7 @@ class TMDB(API):
 		ans = self._data["release"]
 		self._answer = {
 			"value" : ans, "fmt" : "\d{4}",
-			"text" : f'{ans} erschien "{self._data["name"]}" (https://www.themoviedb.org/movie/{self._data["id"]}).',
+			"text" : f'{ans} erschien "{self._data["name"]}" https://www.themoviedb.org/movie/{self._data["id"]}',
 			"reaction" : "{} {} um {} Jahr/e vom richtigen Wert ab."
 		}
 	def __getMovieBudget(self):
@@ -70,28 +70,28 @@ class TMDB(API):
 		ans = self._data["budget"]
 		self._answer = {
 			"value" : ans, "fmt" : "\d+",
-			"text" : f'{ans} USD kostete "{self._data["name"]}" (https://www.themoviedb.org/movie/{self._data["id"]}).',
+			"text" : f'{ans} USD kostete "{self._data["name"]}" https://www.themoviedb.org/movie/{self._data["id"]}',
 			"reaction" : "{} {} um {} USD vom richtigen Wert ab."
 		}
 	def __getMovieBoxOffice(self):
 		self._question = f'Wie hoch war das Box-Office-Ergebnis (in USD) für den Film "{self._data["name"]}"?'
 		self._answer = {
 			"value" : self._data["box-office"], "fmt" : "\d+",
-			"text" : f'{numWithSeps(self._data["box-office"])} USD brachte "{self._data["name"]}" (https://www.themoviedb.org/movie/{self._data["id"]}) ein.',
+			"text" : f'{numWithSeps(self._data["box-office"])} USD brachte "{self._data["name"]}" https://www.themoviedb.org/movie/{self._data["id"]} ein.',
 			"reaction" : "{} {} um {} USD vom richtigen Wert ab."
 		}
 	def __getMovieDuration(self):
 		self._question = f'Wie viele Minuten geht der Film "{self._data["name"]}"?'
 		self._answer = {
 			"value" : self._data["duration"], "fmt" : "\d+",
-			"text" : f'{self._data["duration"]} Minuten läuft "{self._data["name"]}" (https://www.themoviedb.org/movie/{self._data["id"]}).',
+			"text" : f'{self._data["duration"]} Minuten läuft "{self._data["name"]}" https://www.themoviedb.org/movie/{self._data["id"]}',
 			"reaction" : "{} {} um {} Minute/n vom richtigen Wert ab."
 		}
 	def __getMovieScore(self):
 		self._question = f'Wie hoch ist die Benutzerwertung vom Film "{self._data["name"]}" ({self._data["release"]}) auf tmdb (in Prozent)?'
 		self._answer = {
 			"value" : self._data["score"], "fmt" : "(0|[1-9]\d|100)",
-			"text" : f'{self._data["score"]} % erhielt "{self._data["name"]}" (https://www.themoviedb.org/movie/{self._data["id"]}).',
+			"text" : f'{self._data["score"]} % erhielt "{self._data["name"]}" https://www.themoviedb.org/movie/{self._data["id"]}',
 			"reaction" : "{} {} um {} Prozentpunkt/e vom richtigen Wert ab."
 		}
 	def __getSeries(self):
@@ -118,28 +118,28 @@ class TMDB(API):
 		self._question = f'In welchem Jahr lief erstmals die Serie/Show "{self._data["name"]}"?'
 		self._answer = {
 			"value" : self._data["start"], "fmt" : "\d{4}",
-			"text" : f'{self._data["start"]} lief erstmals "{self._data["name"]}" (https://www.themoviedb.org/tv/{self._data["id"]}).',
+			"text" : f'{self._data["start"]} lief erstmals "{self._data["name"]}" https://www.themoviedb.org/tv/{self._data["id"]}',
 			"reaction" : "{} {} um {} Jahr/e vom richtigen Wert ab."
 		}
 	def __getSeriesLastEpisode(self):
 		self._question = f'In welchem Jahr lief zuletzt die Serie/Show "{self._data["name"]}"?'
 		self._answer = {
 			"value" : self._data["last_episode"], "fmt" : "\d{4}",
-			"text" : f'{self._data["last_episode"]} lief zuletzt "{self._data["name"]}" (https://www.themoviedb.org/tv/{self._data["id"]}).',
+			"text" : f'{self._data["last_episode"]} lief zuletzt "{self._data["name"]}" https://www.themoviedb.org/tv/{self._data["id"]}',
 			"reaction" : "{} {} um {} Jahr/e vom richtigen Wert ab."
 		}
 	def __getSeriesEpisodes(self):
 		self._question = f'Wie viele Episoden hat die Serie/Show "{self._data["name"]}"?'
 		self._answer = {
 			"value" : self._data["episodes"], "fmt" : "\d+",
-			"text" : f'{self._data["episodes"]} Episode{"n" if self._data["episodes"] > 1 else ""} gibt es von "{self._data["name"]}" (https://www.themoviedb.org/tv/{self._data["id"]}).',
+			"text" : f'{self._data["episodes"]} Episode{"n" if self._data["episodes"] > 1 else ""} gibt es von "{self._data["name"]}" https://www.themoviedb.org/tv/{self._data["id"]}',
 			"reaction" : "{} {} um {} vom richtigen Wert ab."
 		}
 	def __getSeriesSeasons(self):
 		self._question = f'Wie viele Staffeln hat die Serie/Show "{self._data["name"]}"?'
 		self._answer = {
 			"value" : self._data["seasons"], "fmt" : "\d+",
-			"text" : f'{self._data["seasons"]} Staffel{"" if self._data["seasons"] == 1 else "n"} gibt es von "{self._data["name"]}" (https://www.themoviedb.org/tv/{self._data["id"]}).',
+			"text" : f'{self._data["seasons"]} Staffel{"" if self._data["seasons"] == 1 else "n"} gibt es von "{self._data["name"]}" https://www.themoviedb.org/tv/{self._data["id"]}',
 			"reaction" : "{} {} um {} vom richtigen Wert ab."
 		}
 	def __getCeleb(self):
@@ -166,7 +166,7 @@ class TMDB(API):
 		ans = self._data["age"]
 		self._answer = {
 			"value" : ans, "fmt" : "\d+",
-			"text" : f'{ans} Jahre ist {self._data["name"]} (https://www.themoviedb.org/person/{self._data["id"]}) alt.',
+			"text" : f'{ans} Jahre ist {self._data["name"]} https://www.themoviedb.org/person/{self._data["id"]} alt.',
 			"reaction" : "{} {} um {} Jahr/e vom richtigen Alter ab."
 		}
 	def test(self):
